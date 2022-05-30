@@ -20,7 +20,7 @@ async function findAllPaletas() {
 
             <div class="PaletaListaItem__acoes Acoes">
               <button class="Acoes__editar btn" onclick="showModal('${paleta._id}')">Editar</button> 
-              <button class="Acoes__apagar btn" onclick="abrirModalDelete('${paleta._id}')">Apagar</button> 
+              <button class="Acoes__apagar btn" onclick="showModalDelete('${paleta._id}')">Apagar</button> 
             </div>
         </div>
         
@@ -74,7 +74,7 @@ async function findByIdPaletas() {
       
       <div class="PaletaListaItem__acoes Acoes">
           <button class="Acoes__editar btn" onclick="showModal(${paleta._id})">Editar</button> 
-          <button class="Acoes__apagar btn" onclick="showModalDelete'(${paleta._id})'">Apagar</button> 
+          <button class="Acoes__apagar btn" onclick="showModalDelete(${paleta._id})">Apagar</button> 
       </div>
   </div>
   <img class="PaletaListaItem__foto" src="${paleta.foto}" alt="Paleta de ${paleta.sabor}" />
@@ -187,14 +187,16 @@ async function submitPaleta() {
 }
 
 /************Abrir modal delete************/
-function abrirModalDelete(id) {
+function showModalDelete(id) {
   document.querySelector("#overlay-delete").style.display = "flex";
 
   const btnSim = document.querySelector(".btn_delete_yes");
 
-  btnSim.addEventListener("click", function() {
-    deletePaleta(id);
-  })
+  btnSim.addEventListener("click",  async() => {
+    const paleta = await deletePaleta(id);
+    return paleta;
+  });
+  
 }
 
 
@@ -205,7 +207,8 @@ function closeModalDelete() {
 
 /************Delete Paleta************/
 async function deletePaleta(id) {
-  const response = await fetch(`${baseURL}/delete-paleta/${id}`, {
+  const response = await fetch(`${baseURL}/delete-paleta/${id}` 
+  ,{
     method: "delete",
     headers: {
       "Content-Type": "application/json",
@@ -214,10 +217,10 @@ async function deletePaleta(id) {
     /**Não passou o body*/
   });
 
-  const result = await response.json();
+  //const result = await response.json();
 
 
-  localStorage.setItem("message", result.message);
+  localStorage.setItem("message", "Deletado com sucesso");
   localStorage.setItem("type", "success");
   closeModalDelete();
   document.location.reload(true);
